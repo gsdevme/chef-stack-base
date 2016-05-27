@@ -1,9 +1,15 @@
+.DS_Store
+.idea
+
 .vagrant
 /cookbooks
 
 # Bundler
 bin/*
 .bundle/*
+
+Gemfile.lock
+Berksfile.lock
 
 .kitchen/
 .kitchen.local.yml
