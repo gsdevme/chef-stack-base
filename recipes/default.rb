@@ -34,7 +34,7 @@ when 'rhel'
     'crond',
     'ntpd',
     'dnsmasq',
-    'sshd'
+    'sshd',
     'yum-cron'
   ]
 end
