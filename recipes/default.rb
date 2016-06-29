@@ -28,12 +28,14 @@ when 'rhel'
   package 'nc'
   package 'glances'
   package 'bind-utils'
+  package 'sysstat'
 
   services = [
     'crond',
     'ntpd',
     'dnsmasq',
-    'sshd'
+    'sshd',
+    'yum-cron'
   ]
 end
 
