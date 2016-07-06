@@ -54,6 +54,11 @@ node.default[:fail2ban][:bantime] = 10800
 
 include_recipe 'fail2ban'
 
+node.default['iptables-ng']['rules']['filter']['INPUT']['zzz-default'] = 'DROP [0:0]'
+node.default['iptables-ng']['rules']['filter']['INPUT']['ssh']['rule'] = '--protocol tcp --dport 22 --match state --state NEW --jump ACCEPT'
+
+include_recipe 'iptables-ng'
+
 services.each do |service|
   service "#{service}" do
     supports :start => true, :stop => true, :restart => true, :reload => true, :status => true
