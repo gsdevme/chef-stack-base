@@ -10,6 +10,11 @@ iptables_ng_rule "20-ssh" do
   rule "--protocol tcp --dport ssh --jump ACCEPT"
 end
 
+iptables_ng_rule "30-established" do
+  chain 'STANDARD-FIREWALL'
+  rule '--match state --state RELATED,ESTABLISHED --jump ACCEPT'
+end
+
 iptables_ng_rule "zzzz-reject_other-ipv4" do
   chain 'STANDARD-FIREWALL'
   rule "--jump REJECT --reject-with icmp-port-unreachable"
