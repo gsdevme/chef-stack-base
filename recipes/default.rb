@@ -58,6 +58,8 @@ node.default[:fail2ban][:bantime] = 10800
 
 include_recipe 'fail2ban'
 
+include_recipe 'iptables-ng'
+
 iptables_ng_chain 'STANDARD-FIREWALL'
 
 iptables_ng_rule 'STANDARD-FIREWALL' do
@@ -70,7 +72,17 @@ iptables_ng_rule "20-ssh" do
   rule "--protocol tcp --dport ssh --jump ACCEPT"
 end
 
-include_recipe 'iptables-ng'
+iptables_ng_rule "zzzz-reject_other-ipv4" do
+  chain 'STANDARD-FIREWALL'
+  rule "--jump REJECT --reject-with icmp-port-unreachable"
+  ip_version 4
+end
+
+iptables_ng_rule "zzzz-reject_other-ipv6" do
+  chain 'STANDARD-FIREWALL'
+  rule "--jump REJECT --reject-with icmp6-port-unreachable"
+  ip_version 6
+end
 
 services.each do |service|
   service "#{service}" do
