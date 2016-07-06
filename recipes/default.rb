@@ -39,12 +39,16 @@ when 'rhel'
   ]
 
   if node['platform_version'].to_i == 7
-    %w(firewalld tuned).each do |service|
-      service "#{service}" do
-        ignore_failure true
-        supports :start => true, :stop => true, :restart => true, :reload => true, :status => true
-        action [:disable, :stop]
+    begin
+      %w(firewalld tuned).each do |service|
+        service "#{service}" do
+          ignore_failure true
+          supports :start => true, :stop => true, :restart => true, :reload => true, :status => true
+          action [:disable, :stop]
+        end
       end
+    rescue Chef::Exceptions::ResourceNotFound
+      #service doesn't exist
     end
   end
 end
@@ -54,8 +58,17 @@ node.default[:fail2ban][:bantime] = 10800
 
 include_recipe 'fail2ban'
 
-node.default['iptables-ng']['rules']['filter']['INPUT']['zzz-default'] = 'DROP [0:0]'
-node.default['iptables-ng']['rules']['filter']['INPUT']['ssh']['rule'] = '--protocol tcp --dport 22 --match state --state NEW --jump ACCEPT'
+iptables_ng_chain 'STANDARD-FIREWALL'
+
+iptables_ng_rule 'STANDARD-FIREWALL' do
+  chain 'INPUT'
+  rule '--jump STANDARD-FIREWALL'
+end
+
+iptables_ng_rule "20-ssh" do
+  chain 'STANDARD-FIREWALL'
+  rule "--protocol tcp --dport ssh --jump ACCEPT"
+end
 
 include_recipe 'iptables-ng'
 
