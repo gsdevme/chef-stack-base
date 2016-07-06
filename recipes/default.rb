@@ -37,6 +37,16 @@ when 'rhel'
     'sshd',
     'yum-cron'
   ]
+
+  if node['platform_version'].to_i == 7
+    %w(firewalld tuned).each do |service|
+      service "#{service}" do
+        ignore_failure true
+        supports :start => true, :stop => true, :restart => true, :reload => true, :status => true
+        action [:disable, :stop]
+      end
+    end
+  end
 end
 
 # 3 days banned
